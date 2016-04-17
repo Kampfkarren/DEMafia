@@ -5,7 +5,7 @@ const _ = require("underscore");
 class Role {
   constructor(game, player){
     this.id = "undefined"; //id used for !create
-    this.name = "Undefined"; //name
+    this.name = "Undefined";
     this.alignment = "town";
     this.items = [];
     this.meetings = ["lynch"];
