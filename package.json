@@ -1,0 +1,28 @@
+{
+  "name": "DEMafia",
+  "description": "EpicMafia on Discord",
+  "version": "1.0.0",
+  "keywords": [
+    "mafia",
+    "discord"
+  ],
+  "maintainers": [
+    {
+      "name": "boynedmaster",
+      "email": "boynedmaster@gmail.com",
+      "web": "https://github.com/boynedmaster"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/boynedmaster/DEMafia.git"
+    }
+  ],
+  "licenses": [
+    {
+      "name": "GPLv3",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.en.html"
+    }
+  ]
+}
