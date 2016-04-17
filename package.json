@@ -2,6 +2,7 @@
   "name": "DEMafia",
   "description": "EpicMafia on Discord",
   "version": "1.0.0",
+  "demafia_version": "Villager",
   "keywords": [
     "mafia",
     "discord"
