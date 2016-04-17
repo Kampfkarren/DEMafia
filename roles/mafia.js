@@ -6,9 +6,7 @@ class Mafia extends Role {
     this.id = "mafia";
     this.name = "Mafia";
     this.alignment = "mafia";
-    this.meetings = [
-      "mafia"
-    ];
+    this.meetings.push("mafia");
   }
 }
 

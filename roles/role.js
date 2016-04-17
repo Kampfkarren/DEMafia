@@ -8,8 +8,7 @@ class Role {
     this.name = "Undefined"; //name
     this.alignment = "town";
     this.items = [];
-    this.meetings = [];
-    this.can_lynch = true;
+    this.meetings = ["lynch"];
     this.game = game;
   }
 
