@@ -13,17 +13,23 @@ class Role {
     this.player = player;
   }
 
-  on_kill(reason){
+  can_kill(reason){
     let ret = true;
 
     _.each(this.items, function(item){
-      if(!item.on_kill(reason)){
+      if(!item.can_kill(reason)){
         ret = false;
         return;
       }
-    });
+    })
 
     return ret;
+  }
+
+  on_kill(reason){
+    _.each(this.items, function(item){
+      item.on_kill(reason);
+    });
   }
 
   on_day(){}
