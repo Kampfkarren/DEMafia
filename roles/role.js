@@ -3,13 +3,14 @@
 const _ = require("underscore");
 
 class Role {
-  constructor(game){
+  constructor(game, player){
     this.id = "undefined"; //id used for !create
     this.name = "Undefined"; //name
     this.alignment = "town";
     this.items = [];
     this.meetings = ["lynch"];
     this.game = game;
+    this.player = player;
   }
 
   on_kill(reason){
