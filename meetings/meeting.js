@@ -29,10 +29,12 @@ module.exports.Meeting = Meeting;
 module.exports.meetings = [
   require("./mafia_meeting.js")
 ];
+
 module.exports.shortcuts = {
   nonmaf_only: (player) => return player.role.alignment !== "mafia",
   mafia_only: (player) => player.role.alignment === "mafia"
 };
+
 module.exports.majority = function(arr){
   let sorted = arr.slice().sort();
   let results = [];
