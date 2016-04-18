@@ -6,6 +6,7 @@ class Role {
   constructor(game, player){
     this.id = "undefined"; //id used for !create
     this.name = "Undefined";
+    this.description = "Lorem ipsum dolor sit amet";
     this.alignment = "town";
     this.items = [];
     this.meetings = ["lynch"];

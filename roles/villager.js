@@ -7,6 +7,7 @@ class Villager extends Role {
     super(game);
     this.id = "villager";
     this.name = "Villager";
+    this.description = "Wins if there are no mafia remaining";
   }
 }
 
