@@ -46,3 +46,7 @@ module.exports.roleList = [
   require("./villager.js"),
   require("./mafia.js")
 ];
+module.exports.rolesAsIds = _.object(
+  _.map(module.exports.roleList, (e) => new e().id),
+  module.exports.roleList
+);
