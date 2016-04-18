@@ -1,3 +1,5 @@
+"use strict";
+
 const Meeting = require("./meeting.js").Meeting;
 const _ = require("underscore");
 

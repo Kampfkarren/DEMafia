@@ -1,3 +1,5 @@
+"use strict";
+
 class Meeting {
   constructor(game){
     this.game = game;

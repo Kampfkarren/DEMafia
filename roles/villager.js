@@ -1,3 +1,5 @@
+"use strict";
+
 const Role = require("./role.js").Role;
 
 class Villager extends Role {
