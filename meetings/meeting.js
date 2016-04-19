@@ -1,5 +1,7 @@
 "use strict";
 
+const _ = require("underscore");
+
 class Meeting {
   constructor(game){
     this.game = game;
