@@ -45,7 +45,7 @@ class Role {
     let meetings = require("../meetings/meeting.js").meetingsAsIds;
 
     return _.map(this.meetings, function(e){
-      return new meetings[e]();
+      return meetings[e];
     });
   }
 }
