@@ -48,3 +48,8 @@ module.exports.majority = function(arr){
 
   return results;
 }
+
+module.exports.meetingsAsIds = _.object(
+  _.map(module.exports.meetings, (e) => new e().id),
+  module.exports.meetings
+);
