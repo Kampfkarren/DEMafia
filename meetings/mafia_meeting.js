@@ -9,6 +9,7 @@ class MafiaMeeting extends Meeting {
     this.id = "mafia";
     this.name = "Mafia Meeting";
     this.description = "Choose someone to kill over the night";
+    this.channel = "mafia";
   }
 
   can_vote_for(player){

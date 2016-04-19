@@ -6,6 +6,7 @@ class Meeting {
     this.id = "undefined";
     this.name = "Undefined Meeting";
     this.description = "";
+    this.channel = "";
     this.voted = {};
     this.can_nl = true;
   }
