@@ -32,7 +32,7 @@ module.exports.meetings = [
 ];
 
 module.exports.shortcuts = {
-  nonmaf_only: (player) => return player.role.alignment !== "mafia",
+  nonmaf_only: (player) => player.role.alignment !== "mafia",
   mafia_only: (player) => player.role.alignment === "mafia"
 };
 
