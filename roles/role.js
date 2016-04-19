@@ -42,10 +42,10 @@ class Role {
   on_lynch(voters){}
 
   get_meetings(){
-    let meetings = require("../meetings/meeting.js").meetingsAsIds;
+    let meetingsList = require("../meetings/meeting.js").meetingsAsIds;
 
     return _.map(this.meetings, function(e){
-      return meetings[e];
+      return new meetingsList[e]();
     });
   }
 }
