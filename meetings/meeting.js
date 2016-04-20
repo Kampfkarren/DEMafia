@@ -30,8 +30,8 @@ class Meeting {
 
 module.exports.Meeting = Meeting;
 module.exports.meetings = [
-  require("./mafia_meeting.js"),
-  require("./lynch_meeting.js")
+  new require("./mafia_meeting.js"),
+  new require("./lynch_meeting.js")
 ];
 
 module.exports.shortcuts = {
