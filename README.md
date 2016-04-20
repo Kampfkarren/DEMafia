@@ -8,10 +8,10 @@
 
 ### __Requirements__:
 * NodeJS (I don't know what version is the minimum)
-* A Discord account dedicated to the bot
+* An official Discord bot account
 
 ### __How to setup__:
-1. Edit account.json with the email and password of the individual bot
+1. Edit account.json with the token of the individual bot
 2. Run node joinserver.js [FULL URL TO TEXT CHANNEL INSTANT INVITE]
 3. (Optional) Give your bot a custom role
 
