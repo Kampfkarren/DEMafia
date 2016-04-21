@@ -1,3 +1,5 @@
+"use strict";
+
 class Player {
   constructor(game, client, role){
     this.game = game;
