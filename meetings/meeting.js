@@ -44,13 +44,13 @@ module.exports.majority = function(arr){
   let results = [];
 
   for(let i = 0; i < arr.length - 1; i++) {
-    if(sorted_arr[i + 1] == sorted_arr[i]){
-      results.push(sorted_arr[i]);
+    if(sorted[i + 1] == sorted[i]){
+      results.push(sorted[i]);
     }
   }
 
   return results;
-}
+};
 
 module.exports.meetingsAsIds = _.object(
   _.map(module.exports.meetings, (e) => new e().id),
