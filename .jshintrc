@@ -1,0 +1,11 @@
+{
+  "globals": {
+    "require": true,
+    "process": true,
+    "module": true,
+    "console": true
+  },
+
+  "esversion": 6,
+  "strict": "global"
+}
