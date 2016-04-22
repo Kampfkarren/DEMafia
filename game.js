@@ -118,7 +118,7 @@ class Game {
     });
   }
 
-  ready(user){
+  ready_up(user){
     if(this.status !== 2){
       this.bot.sendMessage(this.channel, "You must wait until all player slots are filled before you can ready up.");
     }else{
