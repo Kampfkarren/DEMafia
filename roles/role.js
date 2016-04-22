@@ -22,7 +22,7 @@ class Role {
         ret = false;
         return;
       }
-    })
+    });
 
     return ret;
   }
