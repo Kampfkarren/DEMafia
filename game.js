@@ -124,7 +124,7 @@ class Game {
     }else{
       this.ready[user] = !this.ready[user];
 
-      this.bot.sendMessage(this.channel, `${user.name} is ${this.ready[user.id] ? "ready" : "not ready"}`);
+      this.bot.sendMessage(this.channel, `${user.name} is ${this.ready[user] ? "ready" : "not ready"}`);
     }
   }
 
