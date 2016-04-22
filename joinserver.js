@@ -24,4 +24,4 @@ bot.on("ready", function(){
 
 console.log(chalk.blue.bold("DEMafia - Join Server"));
 
-bot.login(account_info["email"], account_info["password"]);
+bot.loginWithToken(account_info.token);
