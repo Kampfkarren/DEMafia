@@ -125,6 +125,10 @@ class Game {
       this.ready[user] = !this.ready[user];
 
       this.bot.sendMessage(this.channel, `${user.name} is ${this.ready[user] ? "ready" : "not ready"}`);
+
+      if(_.every(this.ready, (ready) => ready)){
+        this.status = 3;
+      }
     }
   }
 
