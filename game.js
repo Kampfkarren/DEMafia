@@ -109,7 +109,7 @@ class Game {
           self.status = 2;
 
           _.each(self.players, function(ply){
-            this.ready[ply.client] = false;
+            self.ready[ply.client] = false;
           });
 
           self.bot.sendMessage(self.channel, "Type !ready in this chat to ready up, type !unready in this chat to unready up");
