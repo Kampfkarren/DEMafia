@@ -141,7 +141,7 @@ class Game {
     if(ret === "")
       ret = "Nobody is ready";
     else{
-      ret = `Ready: ${ret.substring(0, ret.length - 1)}`;
+      ret = `Ready: ${ret}`; //TODO: Fix commas at the end
     }
 
     this.bot.sendMessage(this.channel, ret);
