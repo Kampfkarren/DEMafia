@@ -16,7 +16,8 @@ class Game {
                      //2 - Waiting for ready up
                      //3 - Playing
                      //4 - Game end
-    this.day = false;
+    this.day = true;
+    this.day_num = 0;
     this.channel = undefined;
     this.server = msg.channel.server;
     this.channels = [];
