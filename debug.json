@@ -1,0 +1,7 @@
+{
+  "allowautosetup": false,
+  "#comment": "If true, the bot won't check if the game can auto at N1 (for example, if true, you can create a game with one mafia and two villagers)",
+
+  "autoready": false,
+  "#comment": "If true, players will be ready by default"
+}
