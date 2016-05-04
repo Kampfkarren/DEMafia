@@ -14,6 +14,10 @@ class Role {
     this.player = player;
   }
 
+  init(){
+    
+  }
+
   can_kill(reason){
     let ret = true;
 
