@@ -12,7 +12,7 @@
 
 ### __How to setup__:
 1. Edit account.json with the token of the individual bot
-2. Run node joinserver.js [FULL URL TO TEXT CHANNEL INSTANT INVITE]
+2. Invite it to your Discord server somehow
 3. (Optional) Give your bot a custom role
 
 To run every other time, run node demafia.js
