@@ -1,6 +1,7 @@
 "use strict";
 
 const _ = require("underscore");
+const debug = require("./debug.json");
 const Player = require("./player.js");
 
 class Game {
@@ -36,6 +37,8 @@ class Game {
 
     let self = this;
 
+    gameCount.gameCount++;
+
     server.createChannel(`game-${gameCount.gameCount}`, "text", function(e, channel){
       self.channel = channel;
 
@@ -66,7 +69,7 @@ class Game {
                   "readMessages": true
                 }, function(){
                   bot.sendMessage(msg.author.id, `Before your lobby becomes public, you must join it yourself by typing !join ${gameCount.gameCount}.`);
-                  gameCount.gameCount++;
+                  console.log(`Game ${gameCount.gameCount} created.`);
                   callback();
                 });
               });
@@ -109,26 +112,36 @@ class Game {
         if(self.players.length === self.setup.length){
           self.status = 2;
 
-          _.each(self.players, function(ply){
-            self.ready[ply.client] = false;
-          });
+          if(debug.autoready){
+            self.start_setup();
+            self.status = 3;
+            self.next();
+          }else{
+            _.each(self.players, function(ply){
+              self.ready[ply.client] = false;
+            });
 
-          self.bot.sendMessage(self.channel, "Type !ready in this chat to ready up, type !unready in this chat to unready up");
+            self.bot.sendMessage(self.channel, "Type !ready in this chat to toggle readying up.");
+          }
         }
       });
     });
   }
 
   ready_up(user){
-    if(this.status !== 2){
+    if(this.status === 1){
       this.bot.sendMessage(this.channel, "You must wait until all player slots are filled before you can ready up.");
+    }else if(this.status === 2){
+      this.bot.sendMessage(this.channel, "The game already started.");
     }else{
       this.ready[user] = !this.ready[user];
 
       this.bot.sendMessage(this.channel, `${user.name} is ${this.ready[user] ? "ready" : "not ready"}`);
 
       if(_.every(this.ready, (ready) => ready)){
+        this.start_setup();
         this.status = 3;
+        this.next();
       }
     }
   }
@@ -161,6 +174,38 @@ class Game {
     });
 
     return ret;
+  }
+
+  start_setup(){
+    let setup = _.shuffle(this.setup);
+
+    _.each(this.players, function(e, i){
+      let role = setup[i];
+      role.player = e;
+      role.game = this;
+
+      e.role = role;
+    });
+
+    //call this after all the roles are set jic lol
+
+    _.each(this.players, function(e){
+      e.role.init();
+    });
+  }
+
+  //TODO: make a name that doesnt suck
+  next(){
+    _.each(this.players, function(e){
+      this.bot.sendMessage(this.channel, `${e.client.name} is a ${e.role.name}`);
+    });
+
+    this.day = !this.day;
+
+    if(!this.day)
+      this.day_num++;
+
+    this.bot.sendMessage(this.channel, `${this.day ? "Day" : "Night"} ${this.day_num}`);
   }
 }
 
