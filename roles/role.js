@@ -1,6 +1,7 @@
 "use strict";
 
 const _ = require("underscore");
+const debug = require("../debug.json");
 
 class Role {
   constructor(game, player){
@@ -15,7 +16,8 @@ class Role {
   }
 
   init(){
-    
+    if(debug.announceroles)
+      console.log(`I'm ${this.player.client.name}, and I'm a ${this.id}`);
   }
 
   can_kill(reason){
