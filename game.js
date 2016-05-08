@@ -200,8 +200,31 @@ class Game {
 
     if(!this.day)
       this.day_num++;
-    
+
+    if(this.check_win()[0]){
+      this.bot.sendMessage(this.channel, `${this.check_win()[1][1] === 0 ? "Town wins" : "Mafia wins"}!`);
+      this.status = 4;
+      return;
+    }
+
     this.bot.sendMessage(this.channel, `${this.day ? "Day" : "Night"} ${this.day_num}`);
+  }
+
+  check_win(){
+    //TODO: Have some easy way to allow third party wins without hardcoding them here
+    let mafia = 0;
+    let town = 0;
+
+    _.each(this.players, function(e){
+      if(e.alive){
+        if(e.role.alignment === mafia)
+          mafia += 1;
+        else
+          town += 1;
+      }
+    });
+
+    return [town - 1 <= mafia || mafia === 0, [town, mafia]];
   }
 }
 
