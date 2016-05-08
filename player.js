@@ -5,6 +5,7 @@ class Player {
     this.game = game;
     this.client = client;
     this.role = role;
+    this.alive = true;
   }
 
   kill(reason){
