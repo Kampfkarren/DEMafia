@@ -1,10 +1,10 @@
 {
-  "allowautosetup": true,
+  "allowautosetup": false,
   "#comment": "If true, the bot won't check if the game can auto at N1 (for example, if true, you can create a game with one mafia and two villagers)",
 
-  "autoready": true,
+  "autoready": false,
   "#comment": "If true, players will be ready by default",
 
-  "announceroles": true,
+  "announceroles": false,
   "#comment": "If true, when a role is initiated, the console will say who the player is and their role"
 }
