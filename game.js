@@ -196,15 +196,11 @@ class Game {
 
   //TODO: make a name that doesnt suck
   next(){
-    _.each(this.players, function(e){
-      this.bot.sendMessage(this.channel, `${e.client.name} is a ${e.role.name}`);
-    });
-
     this.day = !this.day;
 
     if(!this.day)
       this.day_num++;
-
+    
     this.bot.sendMessage(this.channel, `${this.day ? "Day" : "Night"} ${this.day_num}`);
   }
 }
