@@ -6,5 +6,8 @@
   "#comment": "If true, players will be ready by default",
 
   "announceroles": false,
-  "#comment": "If true, when a role is initiated, the console will say who the player is and their role"
+  "#comment": "If true, when a role is initiated, the console will say who the player is and their role",
+
+  "createdebugsetup": [],
+  "#comment": "If the array is not empty, a setup with the roles in it will be automatically created"
 }
