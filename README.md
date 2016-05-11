@@ -2,6 +2,7 @@
 
 ### __Systems worked on (Add if something different worked for you)__:
 * Ubuntu 14.04 - NodeJS v4.4.1
+* Ubuntu 14.04 - NodeJS v6.1.0
 
 ### __Systems not working on (add if something different didn't work for you)__:
 * None
