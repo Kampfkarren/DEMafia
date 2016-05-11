@@ -5,12 +5,11 @@ const debug = require("./debug.json");
 const Player = require("./player.js");
 
 class Game {
-  constructor(bot, msg, setup, all_channels, gameCount, host){
+  constructor(bot, msg, setup, all_channels, host){
     this.bot = bot;
     this.msg = msg;
     this.setup = setup;
     this.all_channels = all_channels;
-    this.gameCount = gameCount;
     this.host = host;
     this.status = 0; //0 - Waiting for host
                      //1 - Waiting for other players
@@ -20,7 +19,7 @@ class Game {
     this.day = true;
     this.day_num = 0;
     this.channel = undefined;
-    this.server = msg.channel.server;
+    this.server = (msg[0] === "system") ? msg[1] : msg.channel.server;
     this.channels = [];
     this.players = [];
     this.ready = {};
@@ -32,14 +31,13 @@ class Game {
     let msg = this.msg;
     let setup = this.setup;
     let all_channels = this.all_channels;
-    let gameCount = this.gameCount;
     let server = this.server;
 
     let self = this;
 
-    gameCount.gameCount++;
+    this.bot.gameCount++;
 
-    server.createChannel(`game-${gameCount.gameCount}`, "text", function(e, channel){
+    server.createChannel(`game-${this.bot.gameCount}`, "text", function(e, channel){
       self.channel = channel;
 
       bot.overwritePermissions(channel.id, server.id, {
@@ -68,8 +66,10 @@ class Game {
                 bot.overwritePermissions(e.id, bot.user, {
                   "readMessages": true
                 }, function(){
-                  bot.sendMessage(msg.author.id, `Before your lobby becomes public, you must join it yourself by typing !join ${gameCount.gameCount}.`);
-                  console.log(`Game ${gameCount.gameCount} created.`);
+                  if(msg[0] !== "system")
+                    bot.sendMessage(msg.author.id, `Before your lobby becomes public, you must join it yourself by typing !join ${self.bot.gameCount}.`);
+
+                  console.log(`Game ${self.bot.gameCount} created.`);
                   callback();
                 });
               });
@@ -80,7 +80,8 @@ class Game {
             finish();
           }else{
             _.each(meetings, function(m){
-              server.createChannel(`game-${gameCount.gameCount}-${m.channel}`, "text", function(e, channel){
+              server.createChannel(`game-${self.bot.gameCount}-${m.channel}`, "text", function(e, channel){
+                channel.meeting = m;
                 bot.overwritePermissions(channel.id, bot.user, {
                   "readMessages": true
                 }, function(){
@@ -139,9 +140,8 @@ class Game {
       this.bot.sendMessage(this.channel, `${user.name} is ${this.ready[user] ? "ready" : "not ready"}`);
 
       if(_.every(this.ready, (ready) => ready)){
-        this.start_setup();
         this.status = 3;
-        this.next();
+        this.start_setup(this.next);
       }
     }
   }
@@ -176,26 +176,53 @@ class Game {
     return ret;
   }
 
-  start_setup(){
+  start_setup(callback){
     let setup = _.shuffle(this.setup);
+    let self = this;
 
     _.each(this.players, function(e, i){
       let role = setup[i];
       role.player = e;
-      role.game = this;
+      role.game = self;
+
+      self.bot.sendMessage(e.client.id, `You are a ${role.name}.\n${role.description}`);
 
       e.role = role;
     });
 
     //call this after all the roles are set jic lol
+    let i = this.players.length;
 
     _.each(this.players, function(e){
-      e.role.init();
+      if(e.role.meetings.length === 1){
+        e.role.init();
+        return;
+      }
+
+      _.each(e.role.meetings, function(meeting){
+        let channel = self.get_meeting_channel(meeting);
+
+        if(channel === null){
+          return;
+        }
+
+        self.bot.overwritePermissions(channel, e.client, {
+          "readMessages": true,
+          "sendMessages": true
+        }, function(){
+          e.role.init();
+
+          if(i === 0)
+            callback();
+        });
+      });
     });
   }
 
   //TODO: make a name that doesnt suck
   next(){
+    let self = this;
+
     this.day = !this.day;
 
     if(!this.day)
@@ -208,6 +235,8 @@ class Game {
     }
 
     this.bot.sendMessage(this.channel, `${this.day ? "Day" : "Night"} ${this.day_num}`);
+
+    this.tell_meetings();
   }
 
   check_win(){
@@ -217,14 +246,52 @@ class Game {
 
     _.each(this.players, function(e){
       if(e.alive){
-        if(e.role.alignment === mafia)
+        if(e.role.alignment === "mafia")
           mafia += 1;
         else
           town += 1;
       }
     });
 
-    return [town - 1 <= mafia || mafia === 0, [town, mafia]];
+    return [town <= mafia || mafia === 0, [town, mafia]];
+  }
+
+  get_meeting_channel(meeting_id){
+    let ret = null;
+
+    _.each(this.channels, function(channel){
+      if(ret !== null)
+        return;
+
+      if(channel.meeting.id === meeting_id)
+        ret = channel;
+    });
+
+    return ret;
+  }
+
+  tell_meetings(){
+    let self = this;
+    let channels_notified = [];
+
+    _.each(this.players, function(e){
+      _.each(e.role.meetings, function(meeting){
+        let channel = self.get_meeting_channel(meeting);
+
+        if(channel === null)
+          return;
+
+        if(channel.meeting.show(self)){
+          if(channels_notified.indexOf(channel) === -1){
+            self.bot.sendMessage(channel, `Type !choose ${meeting} YOUR TARGET'S DISCORD AT`);
+            channels_notified.push(channel);
+          }
+
+          if(meeting.notify)
+            self.bot.sendMessage(channel, `${e.client.name}, the ${e.role.name}, joined the meeting.`);
+        }
+      });
+    });
   }
 }
 

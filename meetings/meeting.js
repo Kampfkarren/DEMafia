@@ -11,6 +11,7 @@ class Meeting {
     this.channel = "";
     this.voted = {};
     this.can_nl = true;
+    this.notify = true;
   }
 
   can_vote_for(player){

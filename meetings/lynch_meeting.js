@@ -9,6 +9,7 @@ class LynchMeeting extends Meeting {
     this.id = "lynch";
     this.name = "Village Meeting";
     this.description = "Choose someone to lynch";
+    this.notify = false;
   }
 
   can_vote_for(player){
