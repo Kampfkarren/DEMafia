@@ -7,5 +7,6 @@
   },
 
   "esversion": 6,
-  "strict": "global"
+  "strict": "global",
+  "loopfunc": true
 }
