@@ -4,8 +4,8 @@ const Meeting = require("./meeting.js").Meeting;
 const _ = require("underscore");
 
 class MafiaMeeting extends Meeting {
-  constructor(game){
-    super(game);
+  constructor(){
+    super();
     this.id = "mafia";
     this.name = "Mafia Meeting";
     this.description = "Choose someone to kill over the night";
@@ -13,7 +13,7 @@ class MafiaMeeting extends Meeting {
   }
 
   can_vote_for(player){
-    return require("./meeting.js").shortcuts.nonmaf_only;
+    return require("./meeting.js").shortcuts.nonmaf_only(player);
   }
 
   show(game){
@@ -21,14 +21,20 @@ class MafiaMeeting extends Meeting {
   }
 
   end(){
-    _.each(this.votes, function(victim, voter){
-      voter.visit(victim, "mafia");
+    _.each(this.voted, (victim, voter) => {
+      if(this.game.players[voter] === undefined)
+        return;
+
+      voter.visit(this.game.players[voter], "mafia");
     });
 
-    let victims = require("./meeting.js").majority(this.votes);
+    let victims = require("./meeting.js").majority(this.voted);
 
     if(victims.length === 1){
       let victim = victims[0];
+
+      if(victim === null || victim === undefined)
+        return;
 
       victim.kill("mafia");
     }

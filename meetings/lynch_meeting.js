@@ -4,8 +4,8 @@ const Meeting = require("./meeting.js").Meeting;
 const _ = require("underscore");
 
 class LynchMeeting extends Meeting {
-  constructor(game){
-    super(game);
+  constructor(){
+    super();
     this.id = "lynch";
     this.name = "Village Meeting";
     this.description = "Choose someone to lynch";

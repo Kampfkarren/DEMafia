@@ -18,7 +18,7 @@ class Game {
                      //4 - Game end
     this.day = true;
     this.day_num = 0;
-    this.channel = undefined;
+    this.channel = null;
     this.server = (msg[0] === "system") ? msg[1] : msg.channel.server;
     this.channels = [];
     this.players = [];
@@ -59,24 +59,32 @@ class Game {
 
           let done = [];
           let finish = function(){
-            _.each(self.channels, function(e){
-              bot.overwritePermissions(e.id, server.id, {
-                "readMessages": false
-              }, function(er){
-                bot.overwritePermissions(e.id, bot.user, {
-                  "readMessages": true
-                }, function(){
-                  if(msg[0] !== "system")
-                    bot.sendMessage(msg.author.id, `Before your lobby becomes public, you must join it yourself by typing !join ${self.bot.gameCount}.`);
+            if(self.channels.length !== 0){ //this usually only happens with debugging or all non maf meet
+              _.each(self.channels, function(e){
+                bot.overwritePermissions(e.id, server.id, {
+                  "readMessages": false
+                }, function(er){
+                  bot.overwritePermissions(e.id, bot.user, {
+                    "readMessages": true
+                  }, function(e){
+                    if(msg[0] !== "system")
+                      bot.sendMessage(msg.author.id, `Before your lobby becomes public, you must join it yourself by typing !join ${self.bot.gameCount}.`);
 
-                  console.log(`Game ${self.bot.gameCount} created.`);
-                  callback();
+                    console.log(`Game ${self.bot.gameCount} created.`);
+                    callback();
+                  });
                 });
               });
-            });
+            }else{
+              if(msg[0] !== "system")
+                bot.sendMessage(msg.author.id, `Before your lobby becomes public, you must join it yourself by typing !join ${self.bot.gameCount}.`);
+
+              console.log(`Game ${self.bot.gameCount} created.`);
+              callback();
+            }
           };
 
-          if(meetings.length === 0){
+          if(_.keys(meetings).length === 0){
             finish();
           }else{
             _.each(meetings, function(m){
@@ -116,7 +124,6 @@ class Game {
           if(debug.autoready){
             self.start_setup();
             self.status = 3;
-            self.next();
           }else{
             _.each(self.players, function(ply){
               self.ready[ply.client] = false;
@@ -141,7 +148,7 @@ class Game {
 
       if(_.every(this.ready, (ready) => ready)){
         this.status = 3;
-        this.start_setup(this.next);
+        this.start_setup();
       }
     }
   }
@@ -158,9 +165,8 @@ class Game {
 
     if(ret === "")
       ret = "Nobody is ready";
-    else{
+    else
       ret = `Ready: ${ret}`; //TODO: Fix commas at the end
-    }
 
     this.bot.sendMessage(this.channel, ret);
   }
@@ -176,62 +182,100 @@ class Game {
     return ret;
   }
 
-  start_setup(callback){
+  start_setup(){
     let setup = _.shuffle(this.setup);
-    let self = this;
 
-    _.each(this.players, function(e, i){
-      let role = setup[i];
-      role.player = e;
-      role.game = self;
+    this.bot.sendMessage(this.channel, "Player IDs:", () => {
+      let ids = "";
+      let i = 0;
 
-      self.bot.sendMessage(e.client.id, `You are a ${role.name}.\n${role.description}`);
+      for(let player of this.players){
+        let role = setup[i];
+        role.player = player;
+        role.game = this;
+        ids += `${player.client.name} - ${i}\n`;
 
-      e.role = role;
-    });
+        this.bot.sendMessage(player.client.id, `You are a ${role.name}.\n${role.description}`);
 
-    //call this after all the roles are set jic lol
-    let i = this.players.length;
-
-    _.each(this.players, function(e){
-      if(e.role.meetings.length === 1){
-        e.role.init();
-        return;
+        player.role = role;
+        i++;
       }
 
-      _.each(e.role.meetings, function(meeting){
-        let channel = self.get_meeting_channel(meeting);
+      //call this after all the roles are set jic lol
+      i = this.players.length;
 
-        if(channel === null){
-          return;
-        }
-
-        self.bot.overwritePermissions(channel, e.client, {
-          "readMessages": true,
-          "sendMessages": true
-        }, function(){
+      for(let e of this.players){
+        if(e.role.meetings.length === 1){
+          i--;
           e.role.init();
 
-          if(i === 0)
-            callback();
-        });
-      });
+          if(i === 0){
+            this.bot.sendMessage(this.channel, ids);
+            this.next();
+            break;
+          }
+
+          continue;
+        }
+
+        for(let meeting of e.role.meetings){
+          let channel = this.get_meeting_channel(meeting);
+
+          if(channel === null)
+            continue;
+
+          channel.meeting.game = this;
+          channel.meeting.on_vote(e, undefined, false);
+
+          this.bot.overwritePermissions(channel, e.client, {
+            "readMessages": true,
+            "sendMessages": true
+          }, () => {
+            i--;
+            e.role.init();
+
+            if(i === 0){
+              this.bot.sendMessage(this.channel, ids);
+              this.next();
+            }
+          });
+        }
+      }
     });
   }
 
   //TODO: make a name that doesnt suck
   next(){
-    let self = this;
-
     this.day = !this.day;
 
     if(!this.day)
       this.day_num++;
-
+    /*
     if(this.check_win()[0]){
       this.bot.sendMessage(this.channel, `${this.check_win()[1][1] === 0 ? "Town wins" : "Mafia wins"}!`);
       this.status = 4;
+      this.players = [];
       return;
+    }
+    */
+
+    for(let meeting of _.map(this.channels, (channel) => {
+      return channel.meeting;
+    })){
+      if(meeting !== undefined){
+        meeting.end();
+
+        for(let key of _.keys(meeting.voted)){
+          meeting.voted[key] = undefined;
+        }
+      }
+    }
+
+    for(let player of this.players){
+      if(this.day)
+        player.role.on_day();
+      else
+        player.role.on_night();
     }
 
     this.bot.sendMessage(this.channel, `${this.day ? "Day" : "Night"} ${this.day_num}`);
@@ -283,15 +327,70 @@ class Game {
 
         if(channel.meeting.show(self)){
           if(channels_notified.indexOf(channel) === -1){
-            self.bot.sendMessage(channel, `Type !choose ${meeting} YOUR TARGET'S DISCORD AT`);
+            self.bot.sendMessage(channel, `Type !choose YOUR TARGET'S DISCORD ID`);
             channels_notified.push(channel);
           }
 
-          if(meeting.notify)
+          if(channel.meeting.notify)
             self.bot.sendMessage(channel, `${e.client.name}, the ${e.role.name}, joined the meeting.`);
         }
       });
     });
+  }
+
+  choose(channel, victim_id, voter_client){
+    let victim = this.players[victim_id];
+    let meeting = channel.meeting;
+    let voter = null;
+
+    for(let player of this.players){
+      if(player.client === voter_client){
+        voter = player;
+        break;
+      }
+    }
+
+    if(!meeting.show(this) || voter === null) //voter === null should never happen but jic
+      return;
+
+    let voted_for = null;
+
+    try{
+      if(victim === undefined && !meeting.can_nl)
+        throw "Can't vote no one. If you didn't vote no one, check the Player ID.";
+
+      if(victim === undefined)
+        voted_for = "no one";
+      else
+        voted_for = victim.client.name;
+      
+      if(!meeting.can_vote_for(victim))
+        throw "Can't vote for that target.";
+    }catch(e){
+      this.bot.sendMessage(channel, `Error voting: ${e}`);
+    }finally{
+      if(voted_for !== null){
+        meeting.on_vote(voter, victim === undefined ? null : victim);
+        this.bot.sendMessage(channel, `${voter_client.name} voted for ${voted_for}`);
+
+        let reset = () => { //theres prob a better way to do this
+          for(meeting of _.map(this.channels, (channel) => { //there was probably other places i could put this
+                                                             //should i really redefine meeting
+            return channel.meeting;
+          })){
+            if(meeting !== undefined){
+              if(_.values(meeting.voted).indexOf(undefined) !== -1){
+                return;
+              }
+            }
+          }
+
+          this.next();
+        };
+
+        reset();
+      }
+    }
   }
 }
 

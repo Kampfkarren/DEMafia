@@ -14,6 +14,8 @@ class Player {
     if(this.role.can_kill(reason))
       this.role.on_kill(reason);
   }
+
+  visit(){}
 }
 
 module.exports = Player;

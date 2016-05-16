@@ -3,8 +3,8 @@
 const _ = require("underscore");
 
 class Meeting {
-  constructor(game){
-    this.game = game;
+  constructor(){
+    this.game = null;
     this.id = "undefined";
     this.name = "Undefined Meeting";
     this.description = "";
@@ -18,8 +18,8 @@ class Meeting {
     return true;
   }
 
-  on_vote(voter, victim){
-    this.voted[voter] = victim;
+  on_vote(voter, victim, trigger=true){
+    this.voted[_.keys(this.game.players).indexOf(voter)] = victim;
   }
 
   show(game){
@@ -41,14 +41,27 @@ module.exports.shortcuts = {
 };
 
 module.exports.majority = function(arr){
-  let sorted = arr.slice().sort();
-  let results = [];
+  if(typeof arr === "object")
+    arr = _.values(arr);
 
-  for(let i = 0; i < arr.length - 1; i++) {
-    if(sorted[i + 1] == sorted[i]){
-      results.push(sorted[i]);
-    }
-  }
+  let rates = {};
+
+  //dont use for of, it turns undefined to 0
+  _.each(arr, function(entry){
+    let i = _.values(arr).indexOf(entry);
+    if(i === -1)
+      i = _.values(rates).length;
+
+    rates[i] = rates[i] === undefined ? 1 : rates[i] + 1;
+  });
+
+  let results = [];
+  let sorted = _.values(rates).sort().reverse();
+
+  _.each(rates, function(entry, i){
+    if(entry === sorted[0])
+      results.push(arr[i]);
+  });
 
   return results;
 };
