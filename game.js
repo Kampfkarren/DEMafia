@@ -359,11 +359,12 @@ class Game {
       if(victim === undefined && !meeting.can_nl)
         throw "Can't vote no one. If you didn't vote no one, check the Player ID.";
 
-      if(victim === undefined)
+      if(victim === undefined){
         voted_for = "no one";
-      else
+        return;
+      }else
         voted_for = victim.client.name;
-      
+
       if(!meeting.can_vote_for(victim))
         throw "Can't vote for that target.";
     }catch(e){
