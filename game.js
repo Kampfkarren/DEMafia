@@ -233,6 +233,7 @@ class Game {
           }, () => {
             i--;
             e.role.init();
+            channel.meeting.voted[this.players.indexOf(e)] = undefined;
 
             if(i === 0){
               this.bot.sendMessage(this.channel, ids);
@@ -266,6 +267,11 @@ class Game {
         meeting.end();
 
         for(let key of _.keys(meeting.voted)){
+          console.log(key);
+          this.bot.overwritePermissions(this.get_meeting_channel(meeting.id), this.players[key].client, {
+            "readMessages": meeting.show(this)
+          });
+
           meeting.voted[key] = undefined;
         }
       }
