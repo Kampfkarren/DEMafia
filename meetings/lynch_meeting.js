@@ -21,6 +21,8 @@ class LynchMeeting extends Meeting {
   }
 
   end(){
+    super.end();
+
     let victims = require("./meeting.js").majority(this.votes);
 
     if(victims.length === 1){

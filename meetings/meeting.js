@@ -9,9 +9,9 @@ class Meeting {
     this.name = "Undefined Meeting";
     this.description = "";
     this.channel = "";
-    this.voted = {};
     this.can_nl = true;
     this.notify = true;
+    this.voted = {};
   }
 
   can_vote_for(player){
@@ -19,7 +19,10 @@ class Meeting {
   }
 
   on_vote(voter, victim, trigger=true){
-    this.voted[_.keys(this.game.players).indexOf(voter)] = victim;
+    let key = _.keys(this.game.players).indexOf(voter);
+
+    if(key !== -1)
+      this.voted[key] = victim;
   }
 
   show(game){

@@ -267,7 +267,6 @@ class Game {
         meeting.end();
 
         for(let key of _.keys(meeting.voted)){
-          console.log(key);
           this.bot.overwritePermissions(this.get_meeting_channel(meeting.id), this.players[key].client, {
             "readMessages": meeting.show(this)
           });

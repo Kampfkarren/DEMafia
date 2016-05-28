@@ -37,6 +37,12 @@ class Role {
     _.each(this.items, function(item){
       item.on_kill(reason);
     });
+
+    for(let channel of this.game.channels){
+      this.game.bot.overwritePermissions(channel, this.player.client, {
+        "sendMessages": false
+      });
+    }
   }
 
   on_day(){}

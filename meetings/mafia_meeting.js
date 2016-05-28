@@ -21,11 +21,15 @@ class MafiaMeeting extends Meeting {
   }
 
   end(){
+    super.end();
+
     _.each(this.voted, (victim, voter) => {
-      if(this.game.players[voter] === undefined)
+      let v = this.game.players[voter];
+
+      if(v === undefined)
         return;
 
-      voter.visit(this.game.players[voter], "mafia");
+      v.visit(this.game.players[voter], "mafia");
     });
 
     let victims = require("./meeting.js").majority(this.voted);
