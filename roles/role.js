@@ -38,11 +38,15 @@ class Role {
       item.on_kill(reason);
     });
 
-    for(let channel of this.game.channels){
-      this.game.bot.overwritePermissions(channel, this.player.client, {
-        "sendMessages": false
-      });
-    }
+    this.game.bot.overwritePermissions(this.game.channel, this.player.client, {
+      "sendMessages": false
+    }, () => {
+      for(let channel of this.game.channels){
+        this.game.bot.overwritePermissions(channel, this.player.client, {
+          "sendMessages": false
+        });
+      }
+    });
   }
 
   on_day(){}

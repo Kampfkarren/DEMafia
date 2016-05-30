@@ -41,10 +41,12 @@ class Game {
       self.channel = channel;
 
       bot.overwritePermissions(channel.id, server.id, {
-        "readMessages": false
+        "readMessages": false,
+        "sendMessages": false
       }, function(err){
         bot.overwritePermissions(channel.id, bot.user, {
-          "readMessages": true
+          "readMessages": true,
+          "sendMessages": true
         }, function(){
           let meetings = {};
           all_channels.all_channels.push(channel);
@@ -62,10 +64,11 @@ class Game {
             if(self.channels.length !== 0){ //this usually only happens with debugging or all non maf meet
               _.each(self.channels, function(e){
                 bot.overwritePermissions(e.id, server.id, {
-                  "readMessages": false
+                  "readMessages": false,
                 }, function(er){
                   bot.overwritePermissions(e.id, bot.user, {
-                    "readMessages": true
+                    "readMessages": true,
+                    "sendMessages": true
                   }, function(e){
                     if(msg[0] !== "system")
                       bot.sendMessage(msg.author.id, `Before your lobby becomes public, you must join it yourself by typing !join ${self.bot.gameCount}.`);
@@ -115,7 +118,8 @@ class Game {
     this.players.push(new Player(this, user, null));
 
     this.bot.overwritePermissions(this.channel, user, {
-      "readMessages": true
+      "readMessages": true,
+      "sendMessages": true
     }, function(){
       self.bot.sendMessage(self.channel, `${user.name} joined the lobby.`, function(){
         if(self.players.length === self.setup.length){
@@ -236,8 +240,9 @@ class Game {
             channel.meeting.voted[this.players.indexOf(e)] = undefined;
 
             if(i === 0){
-              this.bot.sendMessage(this.channel, ids);
-              this.next();
+              this.bot.sendMessage(this.channel, ids, () => {
+                this.next();
+              });
             }
           });
         }
@@ -249,8 +254,10 @@ class Game {
   next(){
     this.day = !this.day;
 
-    if(!this.day)
+    if(!this.day){
       this.day_num++;
+    }
+
     /*
     if(this.check_win()[0]){
       this.bot.sendMessage(this.channel, `${this.check_win()[1][1] === 0 ? "Town wins" : "Mafia wins"}!`);
@@ -259,6 +266,12 @@ class Game {
       return;
     }
     */
+
+    for(let player of this.players){
+      this.bot.overwritePermissions(this.channel, player, {
+        "sendMessages": false
+      });
+    }
 
     for(let meeting of _.map(this.channels, (channel) => {
       return channel.meeting;
@@ -306,17 +319,15 @@ class Game {
   }
 
   get_meeting_channel(meeting_id){
-    let ret = null;
-
-    _.each(this.channels, function(channel){
-      if(ret !== null)
-        return;
+    for(let channel of this.channels){
+      if(channel.meeting === undefined)
+        continue;
 
       if(channel.meeting.id === meeting_id)
-        ret = channel;
-    });
+        return channel;
+    }
 
-    return ret;
+    return null;
   }
 
   tell_meetings(){

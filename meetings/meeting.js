@@ -19,7 +19,7 @@ class Meeting {
   }
 
   on_vote(voter, victim, trigger=true){
-    let key = _.keys(this.game.players).indexOf(voter);
+    let key = this.game.players.indexOf(voter);
 
     if(key !== -1)
       this.voted[key] = victim;
