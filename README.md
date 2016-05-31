@@ -1,6 +1,6 @@
 # DEMafia v1.0.0 (Villager)
 
-### __Systems worked on (Add if something different worked for you)__:
+### __Systems worked on (add if something different worked for you)__:
 * Ubuntu 14.04 - NodeJS v4.4.1
 * Ubuntu 14.04 - NodeJS v6.1.0
 
